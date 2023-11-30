@@ -1,12 +1,20 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
+import { AuthService } from './user/services/auth.service';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService, // private readonly authService: AuthService,
+    private readonly authService: AuthService, // private readonly authService: AuthService,
+  ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @ApiOperation({
+    summary: 'initial data',
+  })
+  @Post('init')
+  async init() {
+    return await this.authService.init();
   }
 }

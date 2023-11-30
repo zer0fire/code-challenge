@@ -8,6 +8,8 @@ async function bootstrap() {
   // build document
   generateDocument(app);
 
-  await app.listen(3000);
+  // app.useGlobalPipes(new ValidationPipe());
+  console.log(process.env.APP_PORT);
+  await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();
