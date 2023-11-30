@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from './user.service';
 import { MongoRepository } from 'typeorm';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
-import { UserDto } from '../dtos/auto.dto';
+import { RegisterUserDto } from '../dtos/auto.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +16,7 @@ export class AuthService {
     private userRepository: MongoRepository<User>,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   clear() {
@@ -24,16 +25,16 @@ export class AuthService {
   }
 
   getPassword(password) {
-    const salt = makeSalt(); // 制作密码盐
-    const hashPassword = encryptPassword(password, salt); // 加密密码
+    const salt = makeSalt();
+    const hashPassword = encryptPassword(password, salt);
     return { salt, hashPassword };
   }
 
   /**
-   * 校验注册信息
+   * Validate login info
    * @param userDto
    */
-  async checkRegisterForm(userDto: UserDto): Promise<any> {
+  async checkRegisterForm(userDto: RegisterUserDto): Promise<any> {
     const { username } = userDto;
     const hasUser = await this.userRepository.findOneBy({ username });
     if (hasUser) {
@@ -42,17 +43,14 @@ export class AuthService {
   }
 
   /**
-   * 注册
+   * Normal register
    * @param userDto
    * @returns
    */
-  async register(userDto: UserDto): Promise<any> {
+  async register(userDto: RegisterUserDto): Promise<any> {
     await this.checkRegisterForm(userDto);
 
     const { username, password } = userDto;
-    // const salt = makeSalt(); // 制作密码盐
-    // const hashPassword = encryptPassword(password, salt);  // 加密密码
-
     const { salt, hashPassword } = this.getPassword(password);
 
     const newUser: User = new User();
@@ -89,9 +87,25 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException(`User doesn't exist`);
     }
+    // get attempt times
+    const times = await this.getAttemptTimes(user);
+    if (user.isAccountDisabled || times >= 3) {
+      // maybe need limit
+      if (times) {
+        // update isAccountDisabled
+        this.userService.update(user._id, {
+          ...user,
+          isAccountDisabled: true,
+        });
+      }
+      throw new NotFoundException(`User has been blocked`);
+    }
+    //
     const { password: dbPassword, salt } = user;
     const currentHashPassword = encryptPassword(password, salt);
     if (currentHashPassword !== dbPassword) {
+      // set attempt times
+      this.setAttemptTimes(user);
       throw new NotFoundException('Password Error');
     }
 
@@ -114,5 +128,19 @@ export class AuthService {
         token,
       },
     };
+  }
+
+  async getAttemptTimes(user: User) {
+    const res = await this.redis.get(user.username);
+    if (res) {
+      return Number(res);
+    } else {
+      return 0;
+    }
+  }
+
+  async setAttemptTimes(user: User) {
+    let times = await this.getAttemptTimes(user);
+    this.redis.set(user.username, ++times, 'EX', 300);
   }
 }
