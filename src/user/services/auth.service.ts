@@ -19,6 +19,10 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
+  async findOneByUsername(username: string): Promise<User> {
+    return this.userRepository.findOneBy({ username });
+  }
+
   clear() {
     this.userRepository.deleteMany({});
     return { ok: 1 };
@@ -36,7 +40,7 @@ export class AuthService {
    */
   async checkRegisterForm(userDto: RegisterUserDto): Promise<any> {
     const { username } = userDto;
-    const hasUser = await this.userRepository.findOneBy({ username });
+    const hasUser = await this.findOneByUsername(username);
     if (hasUser) {
       throw new NotFoundException('Already exist');
     }
@@ -83,12 +87,12 @@ export class AuthService {
    */
   async checkLoginForm(loginDTO: LoginDTO): Promise<any> {
     const { username, password } = loginDTO;
-    const user = await this.userRepository.findOneBy({ username });
+    const user = await this.findOneByUsername(username);
     if (!user) {
       throw new NotFoundException(`User doesn't exist`);
     }
     // get attempt times
-    const times = await this.getAttemptTimes(user);
+    const times = await this.getAttemptTimes(user.username);
     if (user.isAccountDisabled || times >= 3) {
       // maybe need limit
       if (times) {
@@ -130,8 +134,8 @@ export class AuthService {
     };
   }
 
-  async getAttemptTimes(user: User) {
-    const res = await this.redis.get(user.username);
+  async getAttemptTimes(username: string) {
+    const res = await this.redis.get(username);
     if (res) {
       return Number(res);
     } else {
@@ -140,7 +144,7 @@ export class AuthService {
   }
 
   async setAttemptTimes(user: User) {
-    let times = await this.getAttemptTimes(user);
+    let times = await this.getAttemptTimes(user.username);
     this.redis.set(user.username, ++times, 'EX', 300);
   }
 }

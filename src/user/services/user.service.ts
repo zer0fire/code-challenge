@@ -12,15 +12,18 @@ export class UserService {
     private userRepository: MongoRepository<User>,
   ) {}
   create(user: User) {
-    return JSON.stringify(user);
+    return `This action create user ${user}`;
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.userRepository.findAndCount({
+      order: { createdAt: 'DESC' },
+      cache: true,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOneByUsername(username) {
+    return this.userRepository.findOneBy({ username });
   }
 
   async update(id: ObjectId, user: CreateUserDto) {

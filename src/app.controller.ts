@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthService } from './user/services/auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -17,5 +17,10 @@ export class AppController {
   @Post('init')
   async init() {
     return await this.authService.init();
+  }
+
+  @Get('/')
+  async getHello() {
+    return await this.appService.getHello();
   }
 }

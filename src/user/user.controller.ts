@@ -16,18 +16,13 @@ import { User } from './entities/user.mongo.entity';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() user: User) {
-    return this.userService.create(user);
-  }
-
   @Get()
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('username') username: string) {
+    return this.userService.findOneByUsername(username);
   }
 }
