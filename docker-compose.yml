@@ -1,0 +1,33 @@
+version: '3.3'
+services:
+  mongo:
+    image: mongo
+    # restart: always
+    ports:
+      - 27017:27017
+  redis:
+    image: redis
+    # command: redis-server --requirepass abc886
+    ports:
+      - 6379:6379
+  server:
+    build:
+      context: ./
+      args:
+        - APP_ENV
+    ports:
+      - 3000:3000
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_PORT: ${APP_PORT}
+      DB_URL: mongodb://mongo:27017
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      REDIS_URL: redis://default:abc886@redis:6379/
+    depends_on:
+      - mongo
+      - redis
+    # restart: always
