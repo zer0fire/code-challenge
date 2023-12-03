@@ -2,7 +2,7 @@
 
 ## Description
 
-This project built by [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project built by [Nest](https://github.com/nestjs/nest) framework, and dockerize the project and database
 
 ## Installation
 
@@ -10,7 +10,15 @@ This project built by [Nest](https://github.com/nestjs/nest) framework TypeScrip
 $ pnpm install
 ```
 
-## Running the app
+# Running the app
+
+use [Docker](https://www.docker.com/) to build all app
+
+```bash
+$ docker compose up
+```
+
+and if you want to develop, use `pnpm` to start this project
 
 ```bash
 # development
@@ -18,14 +26,15 @@ $ pnpm run start
 
 # watch mode
 $ pnpm dev
+$ pnpm start: dev
 
 # production mode
 $ pnpm run start:prod
 ```
 
-## Access swagger document
+## Document
 
-open the watch mode and access `/api/doc` path
+open the watch mode and access `//localhost:3000//api/doc` path, access the api document
 
 ```bash
 $ pnpm dev
