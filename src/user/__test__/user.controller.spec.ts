@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../user.controller';
-import { UserService } from '../services/user.service';
 import { SharedModule } from '@/shared/shared.module';
 import { UserModule } from '../user.module';
 import { AppController } from '@/app.controller';

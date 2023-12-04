@@ -9,7 +9,7 @@ async function bootstrap() {
   generateDocument(app);
 
   // app.useGlobalPipes(new ValidationPipe());
-  console.log(process.env.APP_PORT);
+  // console.log(process.env.APP_PORT);
   await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();

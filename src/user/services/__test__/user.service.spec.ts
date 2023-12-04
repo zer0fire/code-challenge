@@ -21,7 +21,6 @@ describe('UserService', () => {
   });
   it('User Service findAll', async () => {
     const userList = await service.findAll();
-    console.log(userList);
     expect(userList[0].length).toEqual(1);
     expect(userList[1]).toEqual(1);
   });

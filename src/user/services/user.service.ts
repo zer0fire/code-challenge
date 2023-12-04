@@ -11,9 +11,6 @@ export class UserService {
     @Inject('USER_REPOSITORY')
     private userRepository: MongoRepository<User>,
   ) {}
-  create(user: User) {
-    return `This action create user ${user}`;
-  }
 
   findAll() {
     return this.userRepository.findAndCount({
@@ -46,9 +43,5 @@ export class UserService {
     const salt = makeSalt();
     const hashPassword = encryptPassword(password, salt);
     return { salt, hashPassword };
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
