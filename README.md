@@ -34,7 +34,7 @@ $ pnpm run start:prod
 
 ## Document
 
-open the watch mode and access `//localhost:3000//api/doc` path, access the api document
+open the watch mode and access `localhost:3000//api/doc` path, access the api document
 
 ```bash
 $ pnpm dev
