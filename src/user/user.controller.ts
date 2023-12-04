@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from './entities/user.mongo.entity';
 
 @Controller('user')
 @ApiTags('User Manage')
