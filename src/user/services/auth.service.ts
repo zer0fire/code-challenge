@@ -8,6 +8,7 @@ import { UserService } from './user.service';
 import { MongoRepository } from 'typeorm';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { RegisterUserDto } from '../dtos/auto.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +24,10 @@ export class AuthService {
     return this.userRepository.findOneBy({ username });
   }
 
-  clear() {
-    this.userRepository.deleteMany({});
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async clear() {
+    await this.userRepository.deleteMany({});
+    console.warn('clear');
     return { ok: 1 };
   }
 
@@ -72,7 +75,7 @@ export class AuthService {
 
   async init() {
     // clear all data
-    this.clear();
+    await this.clear();
 
     await this.register({
       username: 'admin',
