@@ -19,4 +19,7 @@ export default (): any => ({
   redis: {
     url: process.env.REDIS_URL,
   },
+  sentry: {
+    url: process.env.SENTRY_DSN,
+  },
 });

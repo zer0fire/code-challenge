@@ -4,7 +4,8 @@ FROM node:18-alpine as builder
 
 WORKDIR /usr/nest-app
 RUN npm config set registry https://registry.npm.taobao.org/
-RUN npm i pnpm -g
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm config set registry https://registry.npm.taobao.org/
 # RUN pnpm install
