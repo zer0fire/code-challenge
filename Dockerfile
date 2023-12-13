@@ -28,13 +28,16 @@ ENV NODE_ENV=${APP_ENV}
 
 WORKDIR /usr/nest-app
 RUN npm config set registry http://registry.npmmirror.com/
-RUN npm i pnpm -g
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+# rewrite 
 COPY --from=builder /usr/nest-app/node_modules ./node_modules
 COPY --from=builder /usr/nest-app/package*.json ./
+COPY --from=builder /usr/nest-app/pnpm-lock.yaml ./
+# RUN pnpm install --shamefully-hoist --prod
 COPY --from=builder /usr/nest-app/dist ./dist
 
 EXPOSE 3000
 
 USER node
 CMD [ "pnpm", "run", "start:prod" ]
-# CMD [ "pnpm", "run", "start" ]
